@@ -7,7 +7,7 @@ let birdX = 50;
 let gravity = 0.5;
 let lift = -10;
 let birdVelocity = 0;
-let pipeWidth = 30; // Smaller pipe width
+let pipeWidth = 200; // Width of the pipe image
 let pipeGap = 250; // Gap between top and bottom pipes
 let pipes = [];
 let score = 0;
@@ -69,6 +69,10 @@ function gameLoop() {
         ctx.drawImage(pipeTopImg, pipes[i].x, pipes[i].y - pipeTopImg.height);
         ctx.drawImage(pipeBottomImg, pipes[i].x, pipes[i].y + pipeGap);
 
+        // Debug: Log dimensions for pipes
+        console.log(`Pipe Top Image Dimensions: ${pipeTopImg.width}x${pipeTopImg.height}`);
+        console.log(`Pipe Bottom Image Dimensions: ${pipeBottomImg.width}x${pipeBottomImg.height}`);
+
         // Collision detection
         if (
             (birdX < pipes[i].x + pipeWidth &&
@@ -109,15 +113,13 @@ function gameLoop() {
     // Draw bird hitbox
     ctx.strokeRect(birdX, birdY, birdWidth, birdHeight); // Bird hitbox
 
-    // Adjust pipe hitboxes based on image dimensions
-    const pipeTopHeight = pipeTopImg.height;
-    const pipeBottomY = pipes[0].y + pipeGap;
-
-    // Draw top pipe hitbox
-    ctx.strokeRect(pipes[0].x, pipes[0].y - pipeTopHeight, pipeWidth, pipeTopHeight); // Top pipe hitbox
-
-    // Draw bottom pipe hitbox
-    ctx.strokeRect(pipes[0].x, pipeBottomY, pipeWidth, canvas.height - pipeBottomY); // Bottom pipe hitbox
+    // Draw pipe hitboxes
+    pipes.forEach(pipe => {
+        // Top pipe hitbox
+        ctx.strokeRect(pipe.x, pipe.y - pipeTopImg.height, pipeWidth, pipeTopImg.height); // Top pipe hitbox
+        // Bottom pipe hitbox
+        ctx.strokeRect(pipe.x, pipe.y + pipeGap, pipeWidth, canvas.height - (pipe.y + pipeGap)); // Bottom pipe hitbox
+    });
 
     // Loop the game
     requestAnimationFrame(gameLoop);
