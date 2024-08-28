@@ -69,42 +69,19 @@ function gameLoop() {
         ctx.drawImage(pipeTopImg, pipes[i].x, pipes[i].y - pipeTopImg.height);
         ctx.drawImage(pipeBottomImg, pipes[i].x, pipes[i].y + pipeGap);
 
-        // More precise collision detection
-        const birdWidth = 30; // Adjusted hitbox width
-        const birdHeight = 30; // Adjusted hitbox height
-        const pipeTopHeight = pipeTopImg.height;
-        const pipeBottomY = pipes[i].y + pipeGap;
-
-        // Check for collision with top pipe
+        // Collision detection
         if (
-            birdX + birdWidth > pipes[i].x && 
-            birdX < pipes[i].x + pipeWidth &&
-            birdY < pipes[i].y
+            (birdX < pipes[i].x + pipeWidth &&
+            birdX + 40 > pipes[i].x &&
+            (birdY < pipes[i].y || birdY + 40 > pipes[i].y + pipeGap)) ||
+            birdY + 40 > canvas.height || birdY < 0
         ) {
             gameOver = true;
-        }
-
-        // Check for collision with bottom pipe
-        if (
-            birdX + birdWidth > pipes[i].x && 
-            birdX < pipes[i].x + pipeWidth &&
-            birdY + birdHeight > pipeBottomY
-        ) {
-            gameOver = true;
-        }
-
-        // Check if the bird hits the ground or ceiling
-        if (birdY + birdHeight > canvas.height || birdY < 0) {
-            gameOver = true;
-        }
-
-        // If the game is over, show an alert with the final score
-        if (gameOver) {
             alert("Game Over! Your Score: " + score);
             return;
         }
 
-        // Increase score when the bird passes a pipe
+        // Increase score
         if (pipes[i].x + pipeWidth < birdX && !pipes[i].scored) {
             score++;
             pipes[i].scored = true;
@@ -124,6 +101,24 @@ function gameLoop() {
         pipes.shift();
     }
 
+    // Draw hitboxes for debugging
+    ctx.strokeStyle = 'red';
+    const birdWidth = 40; // Bird width
+    const birdHeight = 40; // Bird height
+
+    // Draw bird hitbox
+    ctx.strokeRect(birdX, birdY, birdWidth, birdHeight); // Bird hitbox
+
+    // Adjust pipe hitboxes based on image dimensions
+    const pipeTopHeight = pipeTopImg.height;
+    const pipeBottomY = pipes[0].y + pipeGap;
+
+    // Draw top pipe hitbox
+    ctx.strokeRect(pipes[0].x, pipes[0].y - pipeTopHeight, pipeWidth, pipeTopHeight); // Top pipe hitbox
+
+    // Draw bottom pipe hitbox
+    ctx.strokeRect(pipes[0].x, pipeBottomY, pipeWidth, canvas.height - pipeBottomY); // Bottom pipe hitbox
+
     // Loop the game
     requestAnimationFrame(gameLoop);
 }
@@ -136,17 +131,3 @@ function initialDraw() {
 
 initialDraw(); // Draw the initial state
 createInitialPipes(); // Set up initial pipes
-
-// Draw hitboxes for debugging
-ctx.strokeStyle = 'red';
-const birdWidth = 20; // Adjusted hitbox width
-const birdHeight = 20; // Adjusted hitbox height
-const pipeTopHeight = pipeTopImg.height;
-let i = 0;
-const pipeBottomY = pipes[i].y + pipeGap;
-
-
-ctx.strokeRect(birdX, birdY, birdWidth, birdHeight); // Bird hitbox
-ctx.strokeRect(pipes[i].x, pipes[i].y - pipeTopImg.height, pipeWidth, pipeTopImg.height); // Top pipe hitbox
-ctx.strokeRect(pipes[i].x, pipeBottomY, pipeWidth, canvas.height - pipeBottomY); // Bottom pipe hitbox
-
