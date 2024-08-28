@@ -7,7 +7,7 @@ let birdX = 50;
 let gravity = 0.5;
 let lift = -10;
 let birdVelocity = 0;
-let pipeWidth = 200; // Width of the pipe image
+let pipeWidth = 150; // Width of the pipe image
 let pipeGap = 250; // Gap between top and bottom pipes
 let pipes = [];
 let score = 0;
@@ -66,8 +66,8 @@ function gameLoop() {
         pipes[i].x -= 2; // Move pipe to the left
 
         // Draw pipes
-        ctx.drawImage(pipeTopImg, pipes[i].x, pipes[i].y - pipeTopImg.height);
-        ctx.drawImage(pipeBottomImg, pipes[i].x, pipes[i].y + pipeGap);
+        ctx.drawImage(pipeTopImg, pipes[i].x-37, pipes[i].y - pipeTopImg.height);
+        ctx.drawImage(pipeBottomImg, pipes[i].x-37, pipes[i].y + pipeGap);
 
         // Debug: Log dimensions for pipes
         console.log(`Pipe Top Image Dimensions: ${pipeTopImg.width}x${pipeTopImg.height}`);
