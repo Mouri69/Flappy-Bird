@@ -127,7 +127,7 @@ function gameLoop() {
     }
 
     // Draw hitboxes for debugging
-    ctx.strokeStyle = 'red';
+    ctx.strokeStyle = 'transparent';
 
     // Draw bird hitbox
     ctx.strokeRect(birdX+5, birdY+5, birdWidth-10, birdHeight-10); // Smaller bird hitbox
