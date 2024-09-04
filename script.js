@@ -11,8 +11,16 @@ let pipeWidth = 150; // Width of the pipe image
 let pipeGap = 250; // Gap between top and bottom pipes
 let pipes = [];
 let score = 0;
+let highScore = localStorage.getItem('flappyHighScore') || 0;
 let gameOver = false;
 let gameStarted = false; // Game does not start until space is pressed
+
+// DOM Elements
+const scoreElement = document.getElementById('score');
+const highScoreElement = document.getElementById('highScore');
+const restartBtn = document.getElementById('restartBtn');
+const gameOverMsg = document.getElementById('gameOverMsg');
+const finalScoreElement = document.getElementById('finalScore');
 
 // Load bird image
 const birdImg = new Image();
@@ -55,6 +63,9 @@ canvas.addEventListener('touchstart', () => {
     }
 });
 
+// Restart button event
+restartBtn.addEventListener('click', restartGame);
+
 // Create initial pipes
 function createInitialPipes() {
     pipes.push({
@@ -90,8 +101,7 @@ function gameLoop() {
             (birdY < pipes[i].y || birdY + birdHeight > pipes[i].y + pipeGap)) ||
             birdY + birdHeight > canvas.height || birdY < 0
         ) {
-            gameOver = true;
-            alert("Game Over! Your Score: " + score);
+            endGame();
             return;
         }
 
@@ -99,6 +109,7 @@ function gameLoop() {
         if (pipes[i].x + pipeWidth < birdX && !pipes[i].scored) {
             score++;
             pipes[i].scored = true;
+            scoreElement.textContent = score;
         }
     }
 
@@ -119,7 +130,7 @@ function gameLoop() {
     ctx.strokeStyle = 'red';
 
     // Draw bird hitbox
-    ctx.strokeRect(birdX, birdY, birdWidth, birdHeight); // Smaller bird hitbox
+    ctx.strokeRect(birdX+5, birdY+5, birdWidth-10, birdHeight-10); // Smaller bird hitbox
 
     // Draw pipe hitboxes
     pipes.forEach(pipe => {
@@ -133,11 +144,52 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
+// End game function
+function endGame() {
+    console.log("End game triggered"); // Add this line
+    gameOver = true;
+    gameOverMsg.classList.remove('hidden');
+    finalScoreElement.textContent = score;
+
+    // Update high score
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('flappyHighScore', highScore);
+        highScoreElement.textContent = highScore;
+    }
+
+    // Confetti effect
+    confetti({
+        particleCount: 200,
+        spread: 100,
+        origin: { y: 0.8 }
+    });
+}
+
+
+// Restart game function
+function restartGame() {
+    gameOver = false;
+    gameStarted = false;
+    score = 0;
+    birdY = canvas.height / 2;
+    birdVelocity = 0;
+    pipes = [];
+    scoreElement.textContent = score;
+    gameOverMsg.classList.add('hidden');
+    createInitialPipes();
+    initialDraw();
+}
+
 // Initial draw (so the bird is visible before starting)
 function initialDraw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(birdImg, birdX, birdY, birdWidth, birdHeight); // Draw the initial smaller bird
 }
 
-initialDraw(); // Draw the initial state
-createInitialPipes(); // Set up initial pipes
+// Set initial high score
+highScoreElement.textContent = highScore;
+
+// Start with an initial pipe
+createInitialPipes();
+initialDraw(); // Ensure bird is drawn initially
